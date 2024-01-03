@@ -34,7 +34,6 @@ namespace CosmeticsShop.Controllers
                 Id = 5,
                 Name = "Eyeliner"
             }
-        };
 
         /// <summary>
         ///  метод получения продукта по идентификатору
