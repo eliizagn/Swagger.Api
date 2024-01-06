@@ -1,0 +1,49 @@
+﻿services:
+   prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+   grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+        - "3000:3000"
+    volumes:
+        - ./grafana:/var/lib/grafana
+    depends_on:
+        prometheus:
+            condition: service_started
+        loki:
+            condition: service_healthy
+        tempo:
+             condition: service_started
+
+   loki:
+     container_name: grafana_loki 
+     image: grafana/loki:latest
+     ports:
+         - "3100:3100"
+     command: -config.file=/etc/loki/local-config.yaml
+     healthcheck:
+            test: wget -q --tries=1 -O- http://localhost:3100/ready
+            interval: 3s
+            timeout: 3s
+            retries: 10
+            start_period: 10s
+
+   tempo:
+    container_name: grafana_tempo
+    hostname: tempo
+    image: grafana/tempo:latest
+    command: "-config.file=/etc/tempo.yaml" 
+    volumes:
+      - ./config/tempo.yaml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
+    
+    ports:
+        - "4317:4317"  
+    
