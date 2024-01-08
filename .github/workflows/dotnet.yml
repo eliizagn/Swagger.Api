@@ -1,9 +1,6 @@
 name: dotnet package
 
-on:
-  push:
-    branches: 
-      - main
+on: [push]
 
 jobs:
   build:
@@ -11,7 +8,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        dotnet-version: ['7.0.x']
+        dotnet-version: [ '7.0.x' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,14 +16,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
+      # You can test your matrix by printing the current dotnet version
       - name: Display dotnet version
         run: dotnet --version
-      - name: Restore dependencies
-        run: dotnet restore
-
-     
-      - name: Build
-        run: dotnet build CosmeticsShop.csproj --configuration Release
-      
-      - name: Test
-        run: dotnet test CosmeticsShop.csproj --configuration Release --no-build
